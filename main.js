@@ -1,14 +1,5 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron');
-const electronReload = require('electron-reload');
 const path = require('node:path');
-
-if(
-  process.env.NODE_ENV === 'dev'
-) {
-  electronReload(__dirname, {
-    electron: path.join(__dirname, '../node_modules', 'electron')
-  });
-}
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -72,7 +63,7 @@ const createWindow = () => {
   });
 
   let toUrl = 'http://askone-manage-pc.consult-test.sit.91lyd.com/askone-manage-pc/#/contentManage/main';
-  toUrl = './views/home/index.html';
+  toUrl = 'src/views/home/index.html';
   // win.loadURL(toUrl);
   win.loadFile(toUrl)
 }
@@ -80,8 +71,8 @@ const createWindow = () => {
 app.whenReady().then(() => {
   console.info(`dev-${process.env.NODE_ENV}`)
   console.info(`node-${process.versions.node}`)
-  console.info(`chrome-${process.versions.chrome}`)
-  console.info(`electron-${process.versions.electron}`)
-  createWindow() 
+  // console.info(`chrome-${process.versions.chrome}`)
+  // console.info(`electron-${process.versions.electron}`)
+  createWindow();
 })
 

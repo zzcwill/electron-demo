@@ -1,5 +1,6 @@
 
 document.getElementById('screenshot')?.addEventListener('click',  async () => {
+  console.info('chrome', window.electWeb.chrome);
   // imApp.captureScreen()
   // imApp.dialog.showMessageBox({
   //   type: 'info',
