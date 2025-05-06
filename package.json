@@ -1,0 +1,13 @@
+{
+  "name": "electron-demo",
+  "version": "1.0.0",
+  "description": "electron-demo",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev electron ./src/main"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^36.1.0",
+    "electron-reload": "^2.0.0-alpha.1"
+  }
+}
