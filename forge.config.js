@@ -1,41 +1,17 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
-module.exports = {
-  publishers: [
-    {
-      name: '@electron-forge/publisher-github',
-      config: {
-        repository: {
-          owner: 'zzcwill',
-          name: 'electron-demo'
-        },
-        prerelease: false, // 是否标记为预发布版本
-        draft: true // 是否创建草稿版本（需手动发布）
-      }
-    }
-  ],  
+module.exports = {  
   packagerConfig: {
-    asar: true,
+    name: "electronDemo",
+    icon: "./src/images/app-icon.png",
+    asar: true, // 是否打包为asar文件
   },
   rebuildConfig: {},
   makers: [
-    {
-      name: '@electron-forge/maker-squirrel',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
-    },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
-    },
+    { name: '@electron-forge/maker-zip' }, // 压缩包
+    { name: '@electron-forge/maker-squirrel' }, // Windows 安装包
+    { name: '@electron-forge/maker-dmg' } // macOS DMG
   ],
   plugins: [
     {

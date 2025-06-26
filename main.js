@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron');
 const path = require('node:path');
+const { exec } = require('child_process');
+const os = require('os');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -74,5 +76,43 @@ app.whenReady().then(() => {
   // console.info(`chrome-${process.versions.chrome}`)
   // console.info(`electron-${process.versions.electron}`)
   createWindow();
+
+  // 处理系统截图请求
+  ipcMain.handle('system-screenshot', async () => {
+    return new Promise((resolve) => {
+      try {
+        // 获取桌面路径
+        const desktopPath = path.join(os.homedir(), 'Desktop');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `screenshot-${timestamp}.png`;
+        const filepath = path.join(desktopPath, filename);
+        
+        // 使用 macOS 的 screencapture 命令进行交互式截图
+        const command = `screencapture -i "${filepath}"`;
+        
+        exec(command, (error, stdout, stderr) => {
+          if (error) {
+            console.error('截图命令执行失败:', error);
+            resolve({
+              success: false,
+              error: error.message
+            });
+          } else {
+            resolve({
+              success: true,
+              filepath: filepath,
+              filename: filename
+            });
+          }
+        });
+      } catch (error) {
+        console.error('截图失败:', error);
+        resolve({
+          success: false,
+          error: error.message
+        });
+      }
+    });
+  });
 })
 
