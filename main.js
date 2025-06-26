@@ -3,6 +3,9 @@ const path = require('node:path');
 const { exec } = require('child_process');
 const os = require('os');
 
+// 设置应用的基本信息
+app.setName('ElectronDemo');
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1400,
@@ -10,9 +13,23 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      contextIsolation: true
+      contextIsolation: true,
+      webSecurity: false // 暂时关闭，解决本地文件加载问题
+    },
+    show: false, // 先不显示，等加载完成后再显示
+    titleBarStyle: 'default', // macOS 标题栏样式
+    vibrancy: 'under-window' // macOS 毛玻璃效果
+  });
+
+  // 窗口准备好后再显示
+  win.once('ready-to-show', () => {
+    win.show();
+    
+    // 开发模式下打开开发者工具
+    if (process.env.NODE_ENV === 'dev') {
+      win.webContents.openDevTools();
     }
-  })
+  });
 
   // 创建自定义右键菜单
   const contextMenu = Menu.buildFromTemplate([
@@ -64,10 +81,31 @@ const createWindow = () => {
   win.on('closed', () => {
   });
 
-  let toUrl = 'http://askone-manage-pc.consult-test.sit.91lyd.com/askone-manage-pc/#/contentManage/main';
-  toUrl = 'src/views/home/index.html';
-  // win.loadURL(toUrl);
-  win.loadFile(toUrl)
+  // 修复打包后的文件路径问题
+  const isDev = process.env.NODE_ENV === 'dev';
+  let htmlPath;
+  
+  if (isDev) {
+    // 开发环境
+    htmlPath = path.join(__dirname, 'src/views/home/index.html');
+  } else {
+    // 生产环境，优先使用相对路径（适用于asar打包）
+    htmlPath = path.join(__dirname, 'src/views/home/index.html');
+  }
+  
+  console.log('加载文件路径:', htmlPath);
+  console.log('当前工作目录:', __dirname);
+  console.log('是否为开发环境:', isDev);
+  
+  win.loadFile(htmlPath).catch((error) => {
+    console.error('加载文件失败:', error);
+    // 如果加载失败，尝试直接使用相对路径
+    const fallbackPath = 'src/views/home/index.html';
+    console.log('尝试备用路径:', fallbackPath);
+    win.loadFile(fallbackPath).catch((err) => {
+      console.error('备用路径也失败:', err);
+    });
+  });
 }
 
 app.whenReady().then(() => {
